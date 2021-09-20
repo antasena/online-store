@@ -1,5 +1,6 @@
 package com.example.onlinestore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -7,18 +8,19 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
-public class Address extends BaseEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id")
+    @Column(name = "user_id")
     private Long id;
 
-    private String addressLine1;
-    private String addressLine2;
-    private String postcode;
-
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @Column(unique = true)
+    private String username;
+
+    @JsonIgnore
+    private String password;
+
+    @OneToOne
     private Customer customer;
 }
