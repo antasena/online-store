@@ -1,6 +1,6 @@
 package com.example.onlinestore.service;
 
-import com.example.onlinestore.model.Order;
+import com.example.onlinestore.model.Orders;
 import com.example.onlinestore.model.OrderItem;
 import com.example.onlinestore.model.Product;
 import com.example.onlinestore.repository.OrderRepository;
@@ -22,18 +22,18 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Transactional
-    public Long processOrder(Order order) {
+    public Long processOrder(Orders orders) {
         try {
             //validate order item
-            validateOrderItem(order.getOrderItems());
+            validateOrderItem(orders.getOrderItems());
 
-            order.setTotalAmount(calculateTotalAmount(order.getOrderItems()));
-            order.setStatus("New");
-            order.setOrderDate(new Date());
-            Long orderId = saveOrder(order);
+            orders.setTotalAmount(calculateTotalAmount(orders.getOrderItems()));
+            orders.setStatus("New");
+            orders.setOrderDate(new Date());
+            Long orderId = saveOrder(orders);
 
             //update product's unit in stock
-            updateProductUnitInStock(order.getOrderItems());
+            updateProductUnitInStock(orders.getOrderItems());
 
             return orderId;
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -46,17 +46,17 @@ public class OrderService {
     }
 
     @Transactional
-    public Long saveOrder(Order order) {
-        if (order.getId() == null) {
-            order.setCreatedDate(new Date());
+    public Long saveOrder(Orders orders) {
+        if (orders.getId() == null) {
+            orders.setCreatedDate(new Date());
         }
-        order.setLastUpdatedDate(new Date());
+        orders.setLastUpdatedDate(new Date());
 
-        return orderRepository.save(order).getId();
+        return orderRepository.save(orders).getId();
     }
 
     @Transactional(readOnly = true)
-    private Order findOrderById(Long orderId) {
+    private Orders findOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
     }
 

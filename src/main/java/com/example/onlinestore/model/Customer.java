@@ -32,5 +32,5 @@ public class Customer extends BaseEntity {
     private Set<Address> address = new HashSet<>();
 
     @OneToMany(mappedBy = "customer")
-    private Set<Order> orders = new HashSet<>();
+    private Set<Orders> orders = new HashSet<>();
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @Entity
-public class Order extends BaseEntity {
+public class Orders extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
@@ -37,7 +37,7 @@ public class Order extends BaseEntity {
 
     @NotNull
     @OneToOne
-    private Address deliveryAddress;
+    private Address address;
 
     @OneToMany(cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems = new HashSet<>();
