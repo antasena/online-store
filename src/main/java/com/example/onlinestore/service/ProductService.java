@@ -2,27 +2,49 @@ package com.example.onlinestore.service;
 
 import com.example.onlinestore.model.Product;
 import com.example.onlinestore.repository.ProductRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 
 @Service
-@Slf4j
 public class ProductService {
     private ProductRepository productRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void decrementUnitInStock(Long productId, int quantity) {
-        Product product = productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        Product product = productRepository.findActiveProductById(productId).orElseThrow(EntityNotFoundException::new);
         int updatedStcok = product.getUnitInStock() - quantity;
-        if (updatedStcok > 0) {
-            product.setUnitInStock(updatedStcok);
-            productRepository.save(product);
-        } else {
-            throw new RuntimeException("Cannot update stock in hand");
+        product.setUnitInStock(updatedStcok);
+        saveProduct(product);
+    }
+
+    @Transactional(readOnly = true)
+    public Product findById(Long productId) {
+        return productRepository.findActiveProductById(productId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional
+    public Long saveProduct(Product product) {
+        if (product.getId() == null) {
+            product.setCreatedDate(new Date());
         }
+        product.setLastUpdatedDate(new Date());
+        Product newProduct = productRepository.save(product);
+        return newProduct.getId();
+    }
+
+    @Transactional
+    public void deleteProductById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        deleteProduct(product);
+    }
+
+    @Transactional
+    public void deleteProduct(Product product) {
+        product.setRecordStatus(0);
+        saveProduct(product);
     }
 }
