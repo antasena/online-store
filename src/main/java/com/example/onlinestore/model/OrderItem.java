@@ -3,7 +3,6 @@ package com.example.onlinestore.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 
 @Data
 @Entity
@@ -17,6 +16,6 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Min(0)
+    @Column(nullable = false)
     private int quantity = 0;
 }

@@ -3,7 +3,6 @@ package com.example.onlinestore.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,17 +14,16 @@ public class Customer extends BaseEntity {
     @Column(name = "customer_id")
     private Long id;
 
-    @NotEmpty
+    @Column(nullable = false, length = 100)
     private String firstName;
 
-    @NotEmpty
+    @Column(nullable = false, length = 100)
     private String lastName;
 
-    @NotEmpty
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @NotEmpty
+    @Column(length = 20)
     private String phoneNumber;
 
     @OneToMany(mappedBy = "customer")

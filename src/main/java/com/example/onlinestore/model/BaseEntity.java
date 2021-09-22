@@ -1,9 +1,9 @@
 package com.example.onlinestore.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.util.Date;
@@ -12,17 +12,16 @@ import java.util.Date;
 @Getter
 @MappedSuperclass
 public class BaseEntity {
-    @JsonIgnore
     @Version
     private Long version;
 
-    @JsonIgnore
+    @Column(insertable=false, updatable=false)
     private Date createdDate;
 
-    @JsonIgnore
+    @Column(insertable=false, updatable=false)
     private Date lastUpdatedDate;
 
     //1 Active, 0 Deleted
-    @JsonIgnore
+    @Column(nullable = false)
     private int recordStatus = 1;
 }

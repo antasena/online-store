@@ -3,8 +3,6 @@ package com.example.onlinestore.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
@@ -15,17 +13,15 @@ public class Product extends BaseEntity {
     @Column(name = "product_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @NotNull
+    @Column(nullable = false, length = 200)
     private String description;
 
-    @NotNull
-    @Min(0)
-    private BigDecimal price;
+    @Column(nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
-    @NotNull
-    @Min(0)
+    @Column(nullable = false)
     private int unitInStock = 0;
 }

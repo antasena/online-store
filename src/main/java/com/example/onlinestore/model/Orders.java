@@ -1,11 +1,8 @@
 package com.example.onlinestore.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,23 +16,20 @@ public class Orders extends BaseEntity {
     @Column(name = "order_id")
     private Long id;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String status;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(insertable=false, updatable=false)
     private Date orderDate;
 
-    @NotNull
+    @Column(nullable = false)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    @JsonBackReference
     private Customer customer;
 
-    @NotNull
     @OneToOne
     private Address address;
 

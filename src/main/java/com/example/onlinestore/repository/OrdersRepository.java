@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends CrudRepository<Orders, Long> {
+public interface OrdersRepository extends CrudRepository<Orders, Long> {
 
     @Query("SELECT o from Orders o WHERE o.id = :id and o.recordStatus = 1")
     Optional<Orders> findActiveOrderById(Long id);

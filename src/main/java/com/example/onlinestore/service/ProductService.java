@@ -1,7 +1,9 @@
 package com.example.onlinestore.service;
 
+import com.example.onlinestore.model.Orders;
 import com.example.onlinestore.model.Product;
 import com.example.onlinestore.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import java.util.Date;
 
 @Service
 public class ProductService {
+    @Autowired
     private ProductRepository productRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -24,6 +27,11 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Product findById(Long productId) {
         return productRepository.findActiveProductById(productId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Iterable<Product> getAll() {
+        return productRepository.findAll();
     }
 
     @Transactional

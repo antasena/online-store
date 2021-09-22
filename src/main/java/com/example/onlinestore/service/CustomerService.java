@@ -1,7 +1,9 @@
 package com.example.onlinestore.service;
 
 import com.example.onlinestore.model.Customer;
+import com.example.onlinestore.model.Product;
 import com.example.onlinestore.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,11 +12,17 @@ import java.util.Date;
 
 @Service
 public class CustomerService {
+    @Autowired
     private CustomerRepository customerRepository;
 
     @Transactional(readOnly = true)
     public Customer findById(Long customerId) {
         return customerRepository.findById(customerId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Iterable<Customer> getAll() {
+        return customerRepository.findAll();
     }
 
     @Transactional
