@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -36,13 +34,13 @@ public class OrdersService {
     public Orders processOrder(OrderRequest orderRequest) {
         Customer customer = customerService.findById(orderRequest.getCustomerId());
         Address deliveryAddress = addressService.findById(orderRequest.getAddressId());
-        Set<OrderItem> orderItems = constructOrderItems(orderRequest);
+        List<OrderItem> orderItems = constructOrderItems(orderRequest);
 
         return processOrder(orderItems, customer, deliveryAddress);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Orders processOrder(Set<OrderItem> orderItems, Customer customer, Address deliveryAddress) {
+    public Orders processOrder(List<OrderItem> orderItems, Customer customer, Address deliveryAddress) {
         try {
             //validate order item
             validateOrderItem(orderItems);
@@ -84,7 +82,7 @@ public class OrdersService {
     }
 
     @Transactional(readOnly = true)
-    private Orders findOrderById(Long orderId) {
+    public Orders findOrderById(Long orderId) {
         return ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -93,7 +91,7 @@ public class OrdersService {
         return ordersRepository.findAll();
     }
 
-    private void validateOrderItem(Set<OrderItem> items) {
+    private void validateOrderItem(List<OrderItem> items) {
         items.stream().forEach(item -> {
                     Product product = productService.findById(item.getProduct().getId());
                     int updatedStcok = product.getUnitInStock() - item.getQuantity();
@@ -104,24 +102,22 @@ public class OrdersService {
         );
     }
 
-    private BigDecimal calculateTotalAmount(Set<OrderItem> items) {
+    private BigDecimal calculateTotalAmount(List<OrderItem> items) {
         BigDecimal total = new BigDecimal(0);
-        items.stream().forEach(item ->
-                total.add(item.getProduct().getPrice().multiply(
-                        new BigDecimal(item.getQuantity()))
-                )
-        );
+        for (OrderItem item : items) {
+            total = total.add(item.getProduct().getPrice().multiply(new BigDecimal(item.getQuantity())));
+        }
         return total;
     }
 
-    private void updateProductUnitInStock(Set<OrderItem> items) {
+    private void updateProductUnitInStock(List<OrderItem> items) {
         items.stream().forEach(item ->
                 productService.decrementUnitInStock(item.getProduct().getId(), item.getQuantity())
         );
     }
 
-    private Set<OrderItem> constructOrderItems(OrderRequest orderRequest) {
-        Set<OrderItem> orderItems = new LinkedHashSet<>();
+    private List<OrderItem> constructOrderItems(OrderRequest orderRequest) {
+        List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemRequest orderItemRequest : orderRequest.getItems()) {
             Product product = productService.findById(orderItemRequest.getProductId());
             OrderItem orderItem = new OrderItem();

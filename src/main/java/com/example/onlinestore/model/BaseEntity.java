@@ -3,9 +3,7 @@ package com.example.onlinestore.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.util.Date;
 
 @Setter
@@ -15,10 +13,12 @@ public class BaseEntity {
     @Version
     private Long version;
 
-    @Column(insertable=false, updatable=false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column()
     private Date createdDate;
 
-    @Column(insertable=false, updatable=false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column()
     private Date lastUpdatedDate;
 
     //1 Active, 0 Deleted

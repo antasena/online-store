@@ -4,9 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -20,7 +18,7 @@ public class Orders extends BaseEntity {
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(insertable=false, updatable=false)
+    @Column()
     private Date orderDate;
 
     @Column(nullable = false)
@@ -34,5 +32,5 @@ public class Orders extends BaseEntity {
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<OrderItem> orderItems = new HashSet<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 }
