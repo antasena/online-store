@@ -32,4 +32,9 @@ public class OrdersController {
                 .collect(Collectors.toList());
         return orders;
     }
+
+    @GetMapping("/{id}")
+    public OrderResponse findById(@PathVariable Long id) {
+        return new OrderResponse(ordersService.findOrderById(id));
+    }
 }

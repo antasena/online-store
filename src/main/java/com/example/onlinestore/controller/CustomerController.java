@@ -1,9 +1,11 @@
 package com.example.onlinestore.controller;
 
 import com.example.onlinestore.api.response.CustomerResponse;
+import com.example.onlinestore.model.Customer;
 import com.example.onlinestore.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +25,10 @@ public class CustomerController {
                 .map(item -> new CustomerResponse(item))
                 .collect(Collectors.toList());
         return customers;
+    }
+
+    @GetMapping("/{id}")
+    public CustomerResponse findById(@PathVariable Long id) {
+        return new CustomerResponse(customerService.findById(id));
     }
 }
