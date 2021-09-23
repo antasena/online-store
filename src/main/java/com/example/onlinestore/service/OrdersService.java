@@ -57,12 +57,12 @@ public class OrdersService {
             orders.setCustomer(customer);
             orders.setOrderItems(orderItems);
 
-            //save orders
-            Long orderId = saveOrder(orders);
-            orders.setId(orderId);
-
             //update product's unit in stock
             updateProductUnitInStock(orderItems);
+
+            //all good, save orders
+            Long orderId = saveOrder(orders);
+            orders.setId(orderId);
 
             log.debug("Done processing order..");
             return orders;
