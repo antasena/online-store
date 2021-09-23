@@ -2,6 +2,8 @@ package com.example.onlinestore.service;
 
 import com.example.onlinestore.api.request.OrderItemRequest;
 import com.example.onlinestore.api.request.OrderRequest;
+import com.example.onlinestore.exceptionhandling.BusinessValidationError;
+import com.example.onlinestore.exceptionhandling.RecordNotFoundException;
 import com.example.onlinestore.model.*;
 import com.example.onlinestore.repository.OrdersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ValidationException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -42,6 +44,7 @@ public class OrdersService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Orders processOrder(List<OrderItem> orderItems, Customer customer, Address deliveryAddress) {
         try {
+            log.debug("Processing order..");
             //validate order item
             validateOrderItem(orderItems);
 
@@ -61,18 +64,17 @@ public class OrdersService {
             //update product's unit in stock
             updateProductUnitInStock(orderItems);
 
+            log.debug("Done processing order..");
             return orders;
         } catch (ObjectOptimisticLockingFailureException e) {
-            log.error("Cannot process order, the stock quantity updated by others. Please try again.", e);
-            throw e;
-        } catch (ValidationException e) {
-            log.error("Cannot process order, invalid order.", e);
-            throw e;
+            log.warn("Cannot process order, the product lock by other process. Retrying the process..");
+            return processOrder(orderItems, customer, deliveryAddress);
         }
     }
 
     @Transactional
     public Long saveOrder(Orders orders) {
+        log.debug("Saving order");
         if (orders.getId() == null) {
             orders.setCreatedDate(new Date());
         }
@@ -82,8 +84,8 @@ public class OrdersService {
     }
 
     @Transactional(readOnly = true)
-    public Orders findOrderById(Long orderId) {
-        return ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+    public Orders findById(Long orderId) {
+        return ordersRepository.findById(orderId).orElseThrow(() -> new RecordNotFoundException(Orders.class, orderId));
     }
 
     @Transactional(readOnly = true)
@@ -94,15 +96,20 @@ public class OrdersService {
     private void validateOrderItem(List<OrderItem> items) {
         items.stream().forEach(item -> {
                     Product product = productService.findById(item.getProduct().getId());
+                    log.debug(String.format("Validating order item for productId: '%d' with requested quantity: '%d'", product.getId(), item.getQuantity()));
                     int updatedStcok = product.getUnitInStock() - item.getQuantity();
                     if (updatedStcok < 0) {
-                        throw new ValidationException("Invalid requested quantity, product's unit in stock is not enough for order.");
+                        String error = String.format("Invalid requested quantity: '%d' for productId: '%s', its greater than available stock: '%d'.",
+                                item.getQuantity(), product.getId(), product.getUnitInStock());
+                        log.error(error);
+                        throw new BusinessValidationError(error);
                     }
                 }
         );
     }
 
     private BigDecimal calculateTotalAmount(List<OrderItem> items) {
+        log.debug("Calculating total amount");
         BigDecimal total = new BigDecimal(0);
         for (OrderItem item : items) {
             total = total.add(item.getProduct().getPrice().multiply(new BigDecimal(item.getQuantity())));
@@ -112,7 +119,7 @@ public class OrdersService {
 
     private void updateProductUnitInStock(List<OrderItem> items) {
         items.stream().forEach(item ->
-                productService.decrementUnitInStock(item.getProduct().getId(), item.getQuantity())
+                productService.reduceUnitInStock(item.getProduct().getId(), item.getQuantity())
         );
     }
 
