@@ -28,7 +28,6 @@ From terminal, execute `./mvnw verify`
 
 From terminal, execute `./mvnw spring-boot:run`
 
-There are some data loaded for testing on local.
 
 ### Endpoints:
 
@@ -66,3 +65,25 @@ There are some data loaded for testing on local.
 The endpoints are secured with basic auth, `username: user` and `password: password`
 
 Above endpoints available for test on http://antasena-online-store.herokuapp.com/
+
+There are some data loaded for testing
+|CUSTOMER_ID|FIRST_NAME|LAST_NAME|EMAIL|
+|----------------|----------------|----------------|----------------|
+|1|John|Doe|john.doe@mail.com|
+|2|Jane|Doe|jane.doe@mail.com|
+|3|Josh|Doe|josh.doe@mail.com|
+
+|ADDRESS_ID|ADDRESS_LINE1|ADDRESS_LINE2|POSTCODE|
+|----------------|----------------|----------------|----------------|
+|1|Jl Kaliurang no 100|Yogyakarta|9091|
+|2|Jl Gejayan no 002|Yogyakarta|9092|
+|3|Jl Malioboro no 3|Yogyakarta|9093|
+
+|PRODUCT_ID|NAME|PRICE|UNIT_IN_STOCK|
+|----------------|----------------|----------------|----------------|
+|1|Product 1|50000.00|100|
+|2|Product 2|25000.00|50|
+|3|Product 3|100000.00|10|
+|4|Product 4|10000.00|75|
+|5|Product 5|20000.00|20|
+
