@@ -24,11 +24,11 @@ checked to avoid negative quantity.
 
 From terminal, execute `./mvnw verify`
 
-There are some data loaded for testing on local.
-
 ### Running the api on local
 
 From terminal, execute `./mvnw spring-boot:run`
+
+There are some data loaded for testing on local.
 
 ### Endpoints:
 
