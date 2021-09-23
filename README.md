@@ -56,5 +56,13 @@ There are some data loaded for testing on local.
 * `GET /api/product/{id}` to return product by id
 * `GET /api/customer` to return all customers
 * `GET /api/customer/{id}` to return customer by id
+* `POST /api/product/addStock` to add stock into a product, it accepts request body:
+```json
+{
+	"productId": 1,
+	"quantity": 10
+}
+```
+The endpoints are secured with basic auth, `username: user` and `password: password`
 
 Above endpoints available for test on http://antasena-online-store.herokuapp.com/

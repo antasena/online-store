@@ -21,7 +21,7 @@ public class ProductService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void reduceUnitInStock(Long productId, int quantity) {
         log.debug(String.format("Reduce unit in stock for productId: '%s' by value: '%d'", productId, quantity));
-        Product product = productRepository.findActiveProductById(productId).orElseThrow(EntityNotFoundException::new);
+        Product product = findById(productId);
         int updatedStcok = product.getUnitInStock() - quantity;
         product.setUnitInStock(updatedStcok);
         saveProduct(product);
@@ -59,6 +59,15 @@ public class ProductService {
         log.debug("Deleting product: ", product.getId());
         product.setRecordStatus(0);
         product.setLastUpdatedDate(new Date());
+        saveProduct(product);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addUnitInStock(Long productId, int quantity) {
+        log.debug(String.format("Add unit in stock for productId: '%s' by value: '%d'", productId, quantity));
+        Product product = findById(productId);
+        int updatedStcok = product.getUnitInStock() + quantity;
+        product.setUnitInStock(updatedStcok);
         saveProduct(product);
     }
 }
